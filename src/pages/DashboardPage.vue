@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div class="q-pa-md form-wrap" style="max-width: 420px">
+    <div class="q-pa-md form-wrap">
       <div class="text-h5 q-mb-md">Mon compte</div>
       <q-separator />
       <q-form class="q-gutter-md q-mt-md">
@@ -29,6 +29,7 @@
 
         <div class="row q-gutter-sm">
           <q-btn color="primary" label="S'abonner au calendrier" :disable="!calendarFeedUrl" @click="subscribeToCalendar" />
+          <q-btn color="warning" label="Regénérer un lien calendrier" @click="openResetDialog" />
           <q-space />
           <q-btn color="secondary" outline label="Se déconnecter" @click="doLogout" />
         </div>
@@ -36,22 +37,9 @@
         <q-separator />
 
         <div class="row q-gutter-sm">
-          <q-btn color="negative" outline label="Supprimer le compte" @click="showDeleteDialog = true" />
+          <q-btn color="negative" label="Supprimer le compte" @click="openDeleteDialog" />
         </div>
       </q-form>
-
-      <q-dialog v-model="showDeleteDialog" persistent>
-        <q-card>
-          <q-card-section class="text-h6">Supprimer le compte</q-card-section>
-          <q-card-section>
-            Cette action supprimera votre compte et votre abonnement calendrier. Confirmez-vous ?
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Annuler" color="primary" v-close-popup />
-            <q-btn flat label="Supprimer" color="negative" @click="confirmDelete" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
     </div>
   </div>
 </template>
@@ -63,6 +51,8 @@ import { useAuthStore } from 'stores/auth-store';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
 import { Client, ApiException } from '../api/business';
+import ConfirmDeleteAccountDialog from 'components/dialogs/ConfirmDeleteAccountDialog.vue';
+import ResetCalendarLinkDialog from 'components/dialogs/ResetCalendarLinkDialog.vue';
 
 interface Decoded extends Record<string, unknown> {
   sub?: string;
@@ -79,7 +69,7 @@ const router = useRouter();
 
 const email = ref('');
 const calendarFeedUrl = ref('');
-const showDeleteDialog = ref(false);
+
 
 function copy(text: string) {
   if (!text) return;
@@ -100,8 +90,26 @@ function subscribeToCalendar() {
 }
 
 function confirmDelete() {
-  showDeleteDialog.value = false;
-  $q.notify({ type: 'negative', message: 'Suppression de compte non disponible (côté serveur)' });
+  $q.loading.show();
+  void (async () => {
+    try {
+      const client = createClient();
+      await client.aurionCalApiEndpointsDeleteUserEndpoint();
+      auth.logout();
+      $q.notify({ type: 'positive', message: 'Compte supprimé.' });
+      void router.push('/');
+    } catch (e) {
+      if (e instanceof ApiException && e.status === 401) {
+        void $q.notify({ type: 'negative', message: 'Session expirée. Veuillez vous reconnecter.' });
+        auth.logout();
+        void router.push('/');
+      } else {
+        $q.notify({ type: 'negative', message: 'Échec de la suppression du compte.' });
+      }
+    } finally {
+      $q.loading.hide();
+    }
+  })();
 }
 
 function doLogout() {
@@ -110,35 +118,24 @@ function doLogout() {
   void router.push('/');
 }
 
-async function loadProfile() {
-  $q.loading.show();
+function authFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
+  const headers = new Headers(init?.headers || {});
+  if (auth.token) headers.set('Authorization', `Bearer ${auth.token}`);
+  return fetch(url, { ...(init || {}), headers });
+}
+
+function createClient() {
+  return new Client(import.meta.env.VITE_API_BASE_URL, { fetch: authFetch });
+}
+
+async function loadProfile(showLoader = true) {
+  if (showLoader) $q.loading.show();
   try {
-    const client = new Client(import.meta.env.VITE_API_BASE_URL, {
-      fetch: (url: RequestInfo, init?: RequestInit) => {
-        const headers = new Headers(init?.headers || {});
-        if (auth.token) headers.set('Authorization', `Bearer ${auth.token}`);
-        return fetch(url, { ...(init || {}), headers });
-      },
-    });
+    const client = createClient();
     const resp = await client.aurionCalApiEndpointsGetUserProfileEndpoint();
     if (resp?.email) email.value = String(resp.email);
-    // Priorité à l'URL calculée côté serveur si fournie
     if (resp?.calendarFeedUrl) {
       calendarFeedUrl.value = resp.calendarFeedUrl;
-    } else if (resp?.userId && auth.token) {
-      // Fallback: si le serveur ne fournit pas l'URL complète
-      const decoded = jwtDecode<Decoded>(auth.token);
-      const feedToken = (decoded.feedToken as string) || (decoded.calendarToken as string) || (decoded.token as string) || '';
-      if (feedToken) {
-        calendarFeedUrl.value = `${import.meta.env.VITE_API_BASE_URL}/api/calendar/${encodeURIComponent(String(resp.userId))}/${encodeURIComponent(feedToken)}.ics`;
-      }
-    }
-    if (!email.value) {
-      // Dernier fallback JWT si email manquant
-      try {
-        const decoded = jwtDecode<Decoded>(auth.token || '');
-        if (decoded.email) email.value = String(decoded.email);
-      } catch {/* ignore */}
     }
   } catch (e) {
     if (e instanceof ApiException && e.status === 401) {
@@ -146,7 +143,7 @@ async function loadProfile() {
       auth.logout();
       void router.push('/');
     } else {
-      // Fallback décode local si l’API n’est pas prête
+      // Fallback local
       email.value = auth.userEmail || '';
       try {
         const decoded = jwtDecode<Decoded>(auth.token || '');
@@ -161,8 +158,42 @@ async function loadProfile() {
       } catch {/* ignore */}
     }
   } finally {
+    if (showLoader) $q.loading.hide();
+  }
+}
+
+async function confirmReset() {
+  try {
+    $q.loading.show();
+    const client = createClient();
+    await client.aurionCalApiEndpointsResetCalendarTokenEndpoint();
+    await loadProfile(false);
+    $q.notify({ type: 'positive', message: 'Lien calendrier regénéré.' });
+  } catch (e) {
+    if (e instanceof ApiException && e.status === 401) {
+      void $q.notify({ type: 'negative', message: 'Session expirée. Veuillez vous reconnecter.' });
+      auth.logout();
+      void router.push('/');
+    } else {
+      $q.notify({ type: 'negative', message: 'Échec de la régénération du lien.' });
+    }
+  } finally {
     $q.loading.hide();
   }
+}
+
+function openDeleteDialog() {
+  $q.dialog({ component: ConfirmDeleteAccountDialog })
+    .onOk(() => {
+      confirmDelete();
+    });
+}
+
+function openResetDialog() {
+  $q.dialog({ component: ResetCalendarLinkDialog })
+    .onOk(() => {
+      void confirmReset();
+    });
 }
 
 onMounted(() => {
@@ -172,7 +203,7 @@ onMounted(() => {
 
 <style scoped>
 .page-container {
-  min-height: 100vh;
+  min-height: 70vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,6 +212,6 @@ onMounted(() => {
 }
 .form-wrap {
   width: 100%;
-  max-width: 420px;
+  max-width: 820px;
 }
 </style>

@@ -66,6 +66,47 @@ export class Client {
     /**
      * @return No Content
      */
+    aurionCalApiEndpointsDeleteUserEndpoint(): Promise<void> {
+        let url_ = this.baseUrl + "/api/user/delete";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAurionCalApiEndpointsDeleteUserEndpoint(_response);
+        });
+    }
+
+    protected processAurionCalApiEndpointsDeleteUserEndpoint(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            return throwException("Forbidden", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return No Content
+     */
     aurionCalApiEndpointsGetCalendarFeedEndpoint(userId: string, token: string): Promise<void> {
         let url_ = this.baseUrl + "/api/calendar/{userId}/{token}.ics";
         if (userId === undefined || userId === null)
@@ -184,6 +225,47 @@ export class Client {
             });
         }
         return Promise.resolve<AurionCalApiEndpointsRegisterUserResponse>(null as any);
+    }
+
+    /**
+     * @return No Content
+     */
+    aurionCalApiEndpointsResetCalendarTokenEndpoint(): Promise<void> {
+        let url_ = this.baseUrl + "/api/user/reset-calendar-token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAurionCalApiEndpointsResetCalendarTokenEndpoint(_response);
+        });
+    }
+
+    protected processAurionCalApiEndpointsResetCalendarTokenEndpoint(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            return throwException("Forbidden", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
     }
 }
 

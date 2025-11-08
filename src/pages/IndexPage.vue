@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div class="q-pa-md form-wrap" style="max-width: 420px">
+    <div class="q-pa-md form-wrap">
       <q-tabs v-model="activeTab" class="text-primary" dense align="justify">
         <q-tab name="login" label="J'ai déjà un compte" icon="login" />
         <q-tab name="register" label="Créer un compte" icon="person_add" />
@@ -75,17 +75,6 @@
           </q-form>
         </q-tab-panel>
       </q-tab-panels>
-      <q-dialog v-model="showRegisterDialog" persistent>
-        <q-card>
-          <q-card-section class="text-h6">Inscription terminée</q-card-section>
-          <q-card-section>
-            Inscription terminée, identifiez-vous afin d'accéder à votre abonnement calendrier.
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="OK" color="primary" @click="confirmRegisterDialog" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
     </div>
   </div>
 </template>
@@ -97,6 +86,7 @@ import { useAuthStore } from 'stores/auth-store';
 import { useRouter } from 'vue-router';
 import { Client, ApiException } from '../api/business';
 import type { QForm } from 'quasar';
+import RegistrationSuccessDialog from 'components/dialogs/RegistrationSuccessDialog.vue';
 
 const activeTab = ref<'login' | 'register'>('login');
 
@@ -109,7 +99,6 @@ const regEmail = ref<string>('');
 const regPassword = ref<string>('');
 const registerLoading = ref(false);
 const registerError = ref<string | null>(null);
-const showRegisterDialog = ref(false);
 const showLoginPwd = ref(false);
 const showRegPwd = ref(false);
 
@@ -126,9 +115,7 @@ const emailRules = [
 ];
 
 async function login() {
-  // Trim avant validation
   email.value = email.value.trim();
-  // Validation formulaire
   const valid = await loginFormRef.value?.validate();
   if (valid === false) {
     $q.notify({ type: 'negative', message: 'Veuillez corriger les erreurs du formulaire.' });
@@ -162,10 +149,12 @@ async function register() {
     const client = new Client(import.meta.env.VITE_API_BASE_URL);
     const response = await client.aurionCalApiEndpointsRegisterUserEndpoint({ email: regEmail.value, password: regPassword.value });
     if (response?.userId) {
-      // Pré-remplir le formulaire de login
       email.value = regEmail.value;
       password.value = regPassword.value;
-      showRegisterDialog.value = true;
+      $q.dialog({ component: RegistrationSuccessDialog }).onOk(() => {
+        activeTab.value = 'login';
+        $q.notify({ type: 'info', message: 'Identifiez-vous maintenant.' });
+      });
     } else {
       registerError.value = 'Erreur lors de l\'inscription.';
     }
@@ -180,17 +169,11 @@ async function register() {
     registerLoading.value = false;
   }
 }
-
-function confirmRegisterDialog() {
-  showRegisterDialog.value = false;
-  activeTab.value = 'login';
-  $q.notify({ type: 'info', message: 'Identifiez-vous maintenant.' });
-}
 </script>
 
 <style scoped>
 .page-container {
-  min-height: 100vh;
+  min-height: 70vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -200,6 +183,6 @@ function confirmRegisterDialog() {
 
 .form-wrap {
   width: 100%;
-  max-width: 420px;
+  max-width: 820px;
 }
 </style>
