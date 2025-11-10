@@ -28,16 +28,17 @@
         </q-input>
 
         <div class="row q-gutter-sm">
-          <q-btn color="primary" label="S'abonner au calendrier" :disable="!calendarFeedUrl" @click="subscribeToCalendar" />
-          <q-btn color="warning" label="Regénérer un lien calendrier" @click="openResetDialog" />
+          <q-btn color="primary" icon="event_available" label="S'abonner au calendrier" :disable="!calendarFeedUrl" @click="subscribeToCalendar" />
           <q-space />
-          <q-btn color="secondary" outline label="Se déconnecter" @click="doLogout" />
+          <q-btn color="warning" icon="autorenew" label="Regénérer un lien calendrier" @click="openResetDialog" />
+          <q-space />
+          <q-btn color="secondary" outline icon="logout" label="Se déconnecter" @click="doLogout" />
         </div>
 
         <q-separator />
 
         <div class="row q-gutter-sm">
-          <q-btn color="negative" label="Supprimer le compte" @click="openDeleteDialog" />
+          <q-btn color="negative" icon="delete_forever" label="Supprimer le compte" @click="openDeleteDialog" />
         </div>
       </q-form>
     </div>

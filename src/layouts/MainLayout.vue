@@ -8,7 +8,7 @@
       <FrequentlyAsked />
     </q-page-container>
 
-    <q-footer class="bg-white">
+    <q-footer :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
       <q-separator/>
       <div class="row items-center justify-end q-px-md q-py-sm full-width text-right text-grey-7">
         <span class="q-mr-sm">Développé par Steve LABUS -</span>
@@ -21,8 +21,14 @@
 </template>
 
 <script setup lang="ts">
-
 import FrequentlyAsked from 'components/FrequentlyAsked.vue';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+
+$q.dark.set("auto");
+
+
 </script>
 
 <style>

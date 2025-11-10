@@ -36,7 +36,7 @@
             </q-input>
 
             <div class="row items-center q-gutter-sm">
-              <q-btn :loading="auth.loading" label="Se connecter" type="submit" color="primary" />
+              <q-btn :loading="auth.loading" icon="login" label="Se connecter" type="submit" color="primary" />
             </div>
           </q-form>
         </q-tab-panel>
@@ -68,9 +68,8 @@
             </q-input>
 
             <div class="row items-center q-gutter-sm">
-              <q-btn :loading="registerLoading" label="S'inscrire" type="submit" color="secondary" />
+              <q-btn :loading="registerLoading" icon="person_add_alt" label="S'inscrire" type="submit" color="secondary" />
             </div>
-            <q-banner v-if="registerError" class="bg-red text-white" dense>{{ registerError }}</q-banner>
           </q-form>
         </q-tab-panel>
       </q-tab-panels>
