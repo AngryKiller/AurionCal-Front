@@ -202,16 +202,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.page-container {
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  box-sizing: border-box;
-}
-.form-wrap {
-  width: 100%;
-  max-width: 820px;
-}
+
 </style>

@@ -38,7 +38,6 @@
             <div class="row items-center q-gutter-sm">
               <q-btn :loading="auth.loading" label="Se connecter" type="submit" color="primary" />
             </div>
-            <q-banner v-if="auth.error" class="bg-red text-white" dense>{{ auth.error }}</q-banner>
           </q-form>
         </q-tab-panel>
         <q-tab-panel name="register">
@@ -172,17 +171,5 @@ async function register() {
 </script>
 
 <style scoped>
-.page-container {
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  box-sizing: border-box;
-}
 
-.form-wrap {
-  width: 100%;
-  max-width: 820px;
-}
 </style>
