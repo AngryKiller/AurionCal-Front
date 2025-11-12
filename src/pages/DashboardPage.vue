@@ -27,18 +27,22 @@
           </template>
         </q-input>
 
-        <div class="row q-gutter-sm">
-          <q-btn color="primary" icon="event_available" label="S'abonner au calendrier" :disable="!calendarFeedUrl" @click="subscribeToCalendar" />
-          <q-space />
-          <q-btn color="warning" icon="autorenew" label="Regénérer un lien calendrier" @click="openResetDialog" />
-          <q-space />
-          <q-btn color="secondary" outline icon="logout" label="Se déconnecter" @click="doLogout" />
+        <div class="row q-col-gutter-sm">
+          <div class="col-12 col-sm">
+            <q-btn class="full-width" color="primary" icon="event_available" label="S'abonner au calendrier" :disable="!calendarFeedUrl" @click="subscribeToCalendar" />
+          </div>
+          <div class="col-12 col-sm">
+            <q-btn class="full-width" color="warning" icon="autorenew" label="Regénérer un flux" @click="openResetDialog" />
+          </div>
+          <div class="col-12 col-sm">
+            <q-btn class="full-width" color="secondary" outline icon="logout" label="Se déconnecter" @click="doLogout" />
+          </div>
         </div>
 
         <q-separator />
 
         <div class="row q-gutter-sm">
-          <q-btn color="negative" icon="delete_forever" label="Supprimer le compte" @click="openDeleteDialog" />
+          <q-btn color="negative" outline class="full-width" icon="delete_forever" label="Supprimer le compte" @click="openDeleteDialog" />
         </div>
       </q-form>
     </div>
@@ -114,9 +118,11 @@ function confirmDelete() {
 }
 
 function doLogout() {
+  $q.loading.show();
   auth.logout();
   $q.notify({ type: 'info', message: 'Déconnecté' });
   void router.push('/');
+  $q.loading.hide();
 }
 
 function authFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
