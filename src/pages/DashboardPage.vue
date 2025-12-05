@@ -58,6 +58,7 @@ import { useRouter } from 'vue-router';
 import { Client, ApiException } from '../api/business';
 import ConfirmDeleteAccountDialog from 'components/dialogs/ConfirmDeleteAccountDialog.vue';
 import ResetCalendarLinkDialog from 'components/dialogs/ResetCalendarLinkDialog.vue';
+import config from 'src/config';
 
 interface Decoded extends Record<string, unknown> {
   sub?: string;
@@ -132,7 +133,7 @@ function authFetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
 }
 
 function createClient() {
-  return new Client(import.meta.env.VITE_API_BASE_URL, { fetch: authFetch });
+  return new Client(config.API_BASE_URL, { fetch: authFetch });
 }
 
 async function loadProfile(showLoader = true) {
@@ -157,7 +158,7 @@ async function loadProfile(showLoader = true) {
         const userId = (decoded.userId as string) || (decoded.sub as string) || '';
         const feedToken = (decoded.feedToken as string) || (decoded.calendarToken as string) || (decoded.token as string) || '';
         if (userId && feedToken) {
-          calendarFeedUrl.value = `${import.meta.env.VITE_API_BASE_URL}/api/calendar/${encodeURIComponent(userId)}/${encodeURIComponent(feedToken)}.ics`;
+          calendarFeedUrl.value = `${config.API_BASE_URL}/api/calendar/${encodeURIComponent(userId)}/${encodeURIComponent(feedToken)}.ics`;
         }
         if (!email.value && decoded.email) {
           email.value = String(decoded.email);

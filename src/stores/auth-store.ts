@@ -1,6 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import jwtDecode from 'jwt-decode';
 import { Client, ApiException } from '../api/business';
+import config from 'src/config';
 
 export interface DecodedJwt {
   exp?: number; // epoch seconds
@@ -39,7 +40,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null;
       this.loading = true;
       try {
-        const client = new Client(import.meta.env.VITE_API_BASE_URL);
+        const client = new Client(config.API_BASE_URL);
         const resp = await client.aurionCalApiEndpointsCheckLoginInfoEndpoint({ email, password });
         if (resp?.isValid && resp.token) {
           this.setAuthData(resp.token, email);
@@ -49,7 +50,7 @@ export const useAuthStore = defineStore('auth', {
           return false;
         }
       } catch (e) {
-        const err = e as unknown;
+        const err = e as Error;
         if (err instanceof ApiException && err.status === 401) {
           this.error = 'Identifiants incorrects';
           return false;
