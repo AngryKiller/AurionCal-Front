@@ -14,6 +14,6 @@ COPY --from=build /app/dist/spa /app
 COPY ./entrypoint.sh /docker/entrypoint.sh
 RUN chmod 777 /docker/entrypoint.sh
 
-RUN apk update && apk add jq && apk add nano
+RUN apt-get update && apt-get install -y jq && apt-get install -y nano
 
 ENTRYPOINT [ "/bin/sh", "/docker/entrypoint.sh" ]
