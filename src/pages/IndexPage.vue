@@ -85,6 +85,7 @@ import { useRouter } from 'vue-router';
 import { Client, ApiException } from '../api/business';
 import type { QForm } from 'quasar';
 import RegistrationSuccessDialog from 'components/dialogs/RegistrationSuccessDialog.vue';
+import config from 'src/config';
 
 const activeTab = ref<'login' | 'register'>('login');
 
@@ -144,7 +145,7 @@ async function register() {
   }
   registerLoading.value = true;
   try {
-    const client = new Client(import.meta.env.VITE_API_BASE_URL);
+    const client = new Client(config.API_BASE_URL);
     const response = await client.aurionCalApiEndpointsRegisterUserEndpoint({ email: regEmail.value, password: regPassword.value });
     if (response?.userId) {
       email.value = regEmail.value;
