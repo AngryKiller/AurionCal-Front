@@ -4,12 +4,7 @@
       <div class="text-h5 q-mb-md">Mon compte</div>
       <q-separator />
       <q-form class="q-gutter-md q-mt-md">
-        <q-input
-          filled
-          v-model="email"
-          label="Adresse mail Junia"
-          readonly
-        >
+        <q-input filled v-model="email" label="Adresse mail Junia" readonly>
           <template #append>
             <q-btn flat round dense icon="content_copy" @click="copy(email)" :disable="!email" />
           </template>
@@ -23,26 +18,60 @@
           readonly
         >
           <template #append>
-            <q-btn flat round dense icon="content_copy" @click="copy(calendarFeedUrl)" :disable="!calendarFeedUrl" />
+            <q-btn
+              flat
+              round
+              dense
+              icon="content_copy"
+              @click="copy(calendarFeedUrl)"
+              :disable="!calendarFeedUrl"
+            />
           </template>
         </q-input>
 
         <div class="row q-col-gutter-sm">
           <div class="col-12 col-sm">
-            <q-btn class="full-width" color="primary" icon="event_available" label="S'abonner au calendrier" :disable="!calendarFeedUrl" @click="subscribeToCalendar" />
+            <q-btn
+              class="full-width"
+              color="primary"
+              icon="event_available"
+              label="S'abonner au calendrier"
+              :disable="!calendarFeedUrl"
+              @click="openSubscribeDialog"
+            />
           </div>
           <div class="col-12 col-sm">
-            <q-btn class="full-width" color="warning" icon="autorenew" label="Regénérer un flux" @click="openResetDialog" />
+            <q-btn
+              class="full-width"
+              color="warning"
+              icon="autorenew"
+              label="Regénérer un flux"
+              @click="openResetDialog"
+            />
           </div>
           <div class="col-12 col-sm">
-            <q-btn class="full-width" color="secondary" outline icon="logout" label="Se déconnecter" @click="doLogout" />
+            <q-btn
+              class="full-width"
+              color="secondary"
+              outline
+              icon="logout"
+              label="Se déconnecter"
+              @click="doLogout"
+            />
           </div>
         </div>
 
         <q-separator />
 
         <div class="row q-gutter-sm">
-          <q-btn color="negative" outline class="full-width" icon="delete_forever" label="Supprimer le compte" @click="openDeleteDialog" />
+          <q-btn
+            color="negative"
+            outline
+            class="full-width"
+            icon="delete_forever"
+            label="Supprimer le compte"
+            @click="openDeleteDialog"
+          />
         </div>
       </q-form>
     </div>
@@ -58,6 +87,7 @@ import { useRouter } from 'vue-router';
 import { Client, ApiException } from '../api/business';
 import ConfirmDeleteAccountDialog from 'components/dialogs/ConfirmDeleteAccountDialog.vue';
 import ResetCalendarLinkDialog from 'components/dialogs/ResetCalendarLinkDialog.vue';
+import ConfirmSubscribeCalendarDialog from 'components/dialogs/ConfirmSubscribeCalendarDialog.vue';
 import config from 'src/config';
 
 interface Decoded extends Record<string, unknown> {
@@ -75,7 +105,6 @@ const router = useRouter();
 
 const email = ref('');
 const calendarFeedUrl = ref('');
-
 
 function copy(text: string) {
   if (!text) return;
@@ -95,6 +124,13 @@ function subscribeToCalendar() {
   }
 }
 
+function openSubscribeDialog() {
+  if (!calendarFeedUrl.value) return;
+  $q.dialog({ component: ConfirmSubscribeCalendarDialog }).onOk(() => {
+    subscribeToCalendar();
+  });
+}
+
 function confirmDelete() {
   $q.loading.show();
   void (async () => {
@@ -106,7 +142,10 @@ function confirmDelete() {
       void router.push('/');
     } catch (e) {
       if (e instanceof ApiException && e.status === 401) {
-        void $q.notify({ type: 'negative', message: 'Session expirée. Veuillez vous reconnecter.' });
+        void $q.notify({
+          type: 'negative',
+          message: 'Session expirée. Veuillez vous reconnecter.',
+        });
         auth.logout();
         void router.push('/');
       } else {
@@ -156,14 +195,20 @@ async function loadProfile(showLoader = true) {
       try {
         const decoded = jwtDecode<Decoded>(auth.token || '');
         const userId = (decoded.userId as string) || (decoded.sub as string) || '';
-        const feedToken = (decoded.feedToken as string) || (decoded.calendarToken as string) || (decoded.token as string) || '';
+        const feedToken =
+          (decoded.feedToken as string) ||
+          (decoded.calendarToken as string) ||
+          (decoded.token as string) ||
+          '';
         if (userId && feedToken) {
           calendarFeedUrl.value = `${config.API_BASE_URL}/api/calendar/${encodeURIComponent(userId)}/${encodeURIComponent(feedToken)}.ics`;
         }
         if (!email.value && decoded.email) {
           email.value = String(decoded.email);
         }
-      } catch {/* ignore */}
+      } catch {
+        /* ignore */
+      }
     }
   } finally {
     if (showLoader) $q.loading.hide();
@@ -191,17 +236,15 @@ async function confirmReset() {
 }
 
 function openDeleteDialog() {
-  $q.dialog({ component: ConfirmDeleteAccountDialog })
-    .onOk(() => {
-      confirmDelete();
-    });
+  $q.dialog({ component: ConfirmDeleteAccountDialog }).onOk(() => {
+    confirmDelete();
+  });
 }
 
 function openResetDialog() {
-  $q.dialog({ component: ResetCalendarLinkDialog })
-    .onOk(() => {
-      void confirmReset();
-    });
+  $q.dialog({ component: ResetCalendarLinkDialog }).onOk(() => {
+    void confirmReset();
+  });
 }
 
 onMounted(() => {
@@ -209,6 +252,4 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
