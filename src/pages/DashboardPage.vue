@@ -118,10 +118,19 @@ function subscribeToCalendar() {
   if (!calendarFeedUrl.value) return;
   try {
     const u = new URL(calendarFeedUrl.value);
-    window.location.href = `webcal://${u.host}${u.pathname}${u.search}`;
+    if (isAndroid()) {
+      // Android needs custom Google Calendar link
+      const webcal = encodeURIComponent(`webcal://${u.host}${u.pathname}${u.search}`);
+      window.location.href = `https://calendar.google.com/calendar/r?cid=${webcal}`;
+      return;
+    }else window.location.href = `webcal://${u.host}${u.pathname}${u.search}`;
   } catch {
     window.open(calendarFeedUrl.value, '_blank');
   }
+}
+
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent || '');
 }
 
 function openSubscribeDialog() {
