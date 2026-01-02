@@ -1,0 +1,84 @@
+{
+  "common": {
+    "language": "Langue",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer"
+  },
+  "layout": {
+    "title": "AurionCal",
+    "subtitle": "Votre emploi du temps synchronisé dans votre calendrier, automatiquement.",
+    "footerBy": "Développé par {name} -"
+  },
+  "auth": {
+    "loginTab": "J'ai déjà un compte",
+    "registerTab": "Créer un compte",
+    "email": "Adresse mail Aurion",
+    "emailHint": "...@student.junia.com",
+    "password": "Mot de passe",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "emailRequired": "Email requis",
+    "emailDomain": "Email doit se terminer par @student.junia.com",
+    "fixFormErrors": "Veuillez corriger les erreurs du formulaire.",
+    "loginSuccess": "Connexion réussie ({email})",
+    "invalidCredentials": "Identifiants invalides",
+    "loginError": "Erreur de connexion",
+    "registerError": "Erreur lors de l'inscription.",
+    "aurionWrongCredentials": "Identifiants Aurion incorrects",
+    "loginNow": "Identifiez-vous maintenant."
+  },
+  "dashboard": {
+    "title": "Mon compte",
+    "emailLabel": "Adresse mail Junia",
+    "calendarUrlLabel": "URL du flux calendrier",
+    "calendarUrlUnavailable": "Indisponible pour le moment",
+    "subscribe": "S'abonner au calendrier",
+    "resetFeed": "Regénérer un flux",
+    "logout": "Se déconnecter",
+    "deleteAccount": "Supprimer le compte",
+    "notifyCopied": "Copié dans le presse-papiers",
+    "notifyCopyFailed": "Impossible de copier",
+    "notifySessionExpired": "Session expirée. Veuillez vous reconnecter.",
+    "notifyAccountDeleted": "Compte supprimé.",
+    "notifyDeleteFailed": "Échec de la suppression du compte.",
+    "notifyLoggedOut": "Déconnecté",
+    "notifyLinkRegenerated": "Lien calendrier regénéré.",
+    "notifyRegenerateFailed": "Échec de la régénération du lien."
+  },
+  "dialogs": {
+    "deleteAccount": {
+      "title": "Supprimer le compte",
+      "message": "Cette action supprimera votre compte et votre abonnement calendrier. Confirmez-vous ?"
+    },
+    "subscribeCalendar": {
+      "title": "S'abonner au calendrier",
+      "message": "Votre application de calendrier va s'ouvrir afin d'ajouter l'abonnement AurionCal.\nPour une utilisation optimale, configurez la fréquence de synchronisation automatique à 1 heure."
+    },
+    "resetCalendarLink": {
+      "title": "Régénérer le lien calendrier",
+      "message": "Cette action invalide l'ancien lien de votre flux calendrier et en génère un nouveau. Vous devrez mettre à jour vos abonnements externes. Continuer ?"
+    }
+  },
+  "faq": {
+    "howItWorks": {
+      "q": "Comment ça fonctionne ? ",
+      "a": "AurionCal vous permet de synchroniser votre emploi du temps Aurion à votre calendrier Apple, Google, etc...\n\nVos événements sont mis à jour automatiquement afin de répercuter les modifications sur Aurion (toutes les 1h environ). Pour cela il vous suffit de créer un compte à l'aide de vos identifiants Junia, puis de vous abonner au flux calendrier généré.\n\nAurionCal n'est aucunement affilié à Junia."
+    },
+    "security": {
+      "q": "Le service est-il sécurisé ? ",
+      "a": "Afin de pouvoir joindre Aurion et récupérer vos données, AurionCal utilise vos identifiants Junia.\n\nCeux-ci sont stockés de manière chiffrée avec une clé privée stockée sur un service externe.\n\nLe code source de AurionCal est ouvert et disponible sur la plateforme GitHub."
+    },
+    "passwordChanged": {
+      "q": "J'ai changé mon mot de passe Aurion, que faire ?",
+      "a": "Fonctionnalité en développement."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Oups. Rien par ici…",
+      "goHome": "Retour à l'accueil"
+    }
+  }
+}
+

@@ -2,8 +2,8 @@
   <div class="page-container">
     <div class="q-pa-md form-wrap">
       <q-tabs v-model="activeTab" class="text-primary" dense align="justify">
-        <q-tab name="login" label="J'ai déjà un compte" icon="login" />
-        <q-tab name="register" label="Créer un compte" icon="person_add" />
+        <q-tab name="login" :label="$t('auth.loginTab')" icon="login" />
+        <q-tab name="register" :label="$t('auth.registerTab')" icon="person_add" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="activeTab" animated>
@@ -13,8 +13,8 @@
               filled
               v-model="email"
               :rules="emailRules"
-              label="Adresse mail Aurion"
-              hint="...@student.junia.com"
+              :label="$t('auth.email')"
+              :hint="$t('auth.emailHint')"
               lazy-rules
             />
 
@@ -22,7 +22,7 @@
               filled
               :type="showLoginPwd ? 'text' : 'password'"
               v-model="password"
-              label="Mot de passe"
+              :label="$t('auth.password')"
               lazy-rules
               :rules="[]"
             >
@@ -36,7 +36,7 @@
             </q-input>
 
             <div class="row items-center q-gutter-sm">
-              <q-btn :loading="auth.loading" icon="login" label="Se connecter" type="submit" color="primary" />
+              <q-btn :loading="auth.loading" icon="login" :label="$t('auth.login')" type="submit" color="primary" />
             </div>
           </q-form>
         </q-tab-panel>
@@ -46,15 +46,15 @@
               filled
               v-model="regEmail"
               :rules="emailRules"
-              label="Adresse mail Aurion"
-              hint="...@student.junia.com"
+              :label="$t('auth.email')"
+              :hint="$t('auth.emailHint')"
               lazy-rules
             />
             <q-input
               filled
               :type="showRegPwd ? 'text' : 'password'"
               v-model="regPassword"
-              label="Mot de passe"
+              :label="$t('auth.password')"
               lazy-rules
               :rules="[]"
             >
@@ -68,7 +68,7 @@
             </q-input>
 
             <div class="row items-center q-gutter-sm">
-              <q-btn :loading="registerLoading" icon="person_add_alt" label="S'inscrire" type="submit" color="secondary" />
+              <q-btn :loading="registerLoading" icon="person_add_alt" :label="$t('auth.register')" type="submit" color="secondary" />
             </div>
           </q-form>
         </q-tab-panel>
@@ -78,7 +78,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'stores/auth-store';
 import { useRouter } from 'vue-router';
@@ -86,6 +87,8 @@ import { Client, ApiException } from '../api/business';
 import type { QForm } from 'quasar';
 import RegistrationSuccessDialog from 'components/dialogs/RegistrationSuccessDialog.vue';
 import config from 'src/config';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const activeTab = ref<'login' | 'register'>('login');
 
@@ -108,29 +111,29 @@ const router = useRouter();
 const loginFormRef = ref<QForm | null>(null);
 const registerFormRef = ref<QForm | null>(null);
 
-const emailRules = [
-  (val: string) => !!val || 'Email requis',
-  (val: string) => val?.toLowerCase().endsWith('@student.junia.com') || 'Email doit se terminer par @student.junia.com',
-];
+const emailRules = computed(() => [
+  (val: string) => !!val || t('auth.emailRequired'),
+  (val: string) => val?.toLowerCase().endsWith('@student.junia.com') || t('auth.emailDomain'),
+]);
 
 async function login() {
   email.value = email.value.trim();
   const valid = await loginFormRef.value?.validate();
   if (valid === false) {
-    $q.notify({ type: 'negative', message: 'Veuillez corriger les erreurs du formulaire.' });
+    $q.notify({ type: 'negative', message: t('auth.fixFormErrors') });
     return;
   }
   try {
     $q.loading.show();
     const success = await auth.login(email.value, password.value);
     if (success) {
-      $q.notify({ type: 'positive', message: `Connexion réussie (${auth.userEmail})` });
+      $q.notify({ type: 'positive', message: t('auth.loginSuccess', { email: auth.userEmail }) });
       await router.push('/dashboard');
     } else {
-      $q.notify({ type: 'negative', message: auth.error || 'Identifiants invalides' });
+      $q.notify({ type: 'negative', message: auth.error || t('auth.invalidCredentials') });
     }
   } catch {
-    $q.notify({ type: 'negative', message: auth.error || 'Erreur de connexion' });
+    $q.notify({ type: 'negative', message: auth.error || t('auth.loginError') });
   } finally {
     $q.loading.hide();
   }
@@ -140,7 +143,7 @@ async function register() {
   regEmail.value = regEmail.value.trim();
   const valid = await registerFormRef.value?.validate();
   if (valid === false) {
-    registerError.value = 'Veuillez corriger les erreurs du formulaire.';
+    registerError.value = t('auth.fixFormErrors');
     return;
   }
   registerLoading.value = true;
@@ -152,17 +155,17 @@ async function register() {
       password.value = regPassword.value;
       $q.dialog({ component: RegistrationSuccessDialog }).onOk(() => {
         activeTab.value = 'login';
-        $q.notify({ type: 'info', message: 'Identifiez-vous maintenant.' });
+        $q.notify({ type: 'info', message: t('auth.loginNow') });
       });
     } else {
-      registerError.value = 'Erreur lors de l\'inscription.';
+      registerError.value = t('auth.registerError');
     }
   } catch (e: unknown) {
     if (e instanceof ApiException && e.status === 401) {
-      $q.notify({ type: 'negative', message: 'Identifiants Aurion incorrects' });
-      registerError.value = 'Identifiants Aurion incorrects';
+      $q.notify({ type: 'negative', message: t('auth.aurionWrongCredentials') });
+      registerError.value = t('auth.aurionWrongCredentials');
     } else {
-      registerError.value = 'Erreur lors de l\'inscription.';
+      registerError.value = t('auth.registerError');
     }
   } finally {
     registerLoading.value = false;

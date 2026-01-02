@@ -1,0 +1,83 @@
+{
+  "common": {
+    "language": "Language",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete"
+  },
+  "layout": {
+    "title": "AurionCal",
+    "subtitle": "Your planning synced into your calendar, seamlessly.",
+    "footerBy": "Made by {name} -"
+  },
+  "auth": {
+    "loginTab": "I already have an account",
+    "registerTab": "Create an account",
+    "email": "Aurion email",
+    "emailHint": "...@student.junia.com",
+    "password": "Password",
+    "login": "Sign in",
+    "register": "Sign up",
+    "emailRequired": "Email required",
+    "emailDomain": "Email must end with @student.junia.com",
+    "fixFormErrors": "Please fix the form errors.",
+    "loginSuccess": "Login successful ({email})",
+    "invalidCredentials": "Invalid credentials",
+    "loginError": "Login error",
+    "registerError": "Registration error.",
+    "aurionWrongCredentials": "Wrong Aurion credentials",
+    "loginNow": "You can now sign in."
+  },
+  "dashboard": {
+    "title": "My account",
+    "emailLabel": "Junia email",
+    "calendarUrlLabel": "Calendar feed URL",
+    "calendarUrlUnavailable": "Unavailable for now",
+    "subscribe": "Subscribe to calendar",
+    "resetFeed": "Regenerate feed",
+    "logout": "Sign out",
+    "deleteAccount": "Delete account",
+    "notifyCopied": "Copied to clipboard",
+    "notifyCopyFailed": "Unable to copy",
+    "notifySessionExpired": "Session expired. Please sign in again.",
+    "notifyAccountDeleted": "Account deleted.",
+    "notifyDeleteFailed": "Failed to delete account.",
+    "notifyLoggedOut": "Signed out",
+    "notifyLinkRegenerated": "Calendar link regenerated.",
+    "notifyRegenerateFailed": "Failed to regenerate link."
+  },
+  "dialogs": {
+    "deleteAccount": {
+      "title": "Delete account",
+      "message": "This action will delete your account and your calendar subscription. Do you confirm?"
+    },
+    "subscribeCalendar": {
+      "title": "Subscribe to calendar",
+      "message": "Your calendar app will open to add the AurionCal subscription.\nFor best results, set automatic sync frequency to 1 hour."
+    },
+    "resetCalendarLink": {
+      "title": "Regenerate calendar link",
+      "message": "This will invalidate your current calendar feed link and generate a new one. You will need to update your external subscriptions. Continue?"
+    }
+  },
+  "faq": {
+    "howItWorks": {
+      "q": "How does it work?",
+      "a": "AurionCal lets you sync your Aurion timetable to your Apple, Google, etc. calendar.\n\nYour events are automatically updated to reflect changes on Aurion (about every hour). To do so, just create an account using your Junia credentials, then subscribe to the generated calendar feed.\n\nAurionCal is not affiliated with Junia."
+    },
+    "security": {
+      "q": "Is the service secure?",
+      "a": "To connect to Aurion and retrieve your data, AurionCal uses your Junia credentials.\n\nThese are stored encrypted with a private key stored on an external service.\n\nAurionCal source code is open and available on GitHub."
+    },
+    "passwordChanged": {
+      "q": "I reset my Aurion password, what should I do?",
+      "a": "Feature under development."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Oops. Nothing here...",
+      "goHome": "Go Home"
+    }
+  }
+}

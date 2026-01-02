@@ -1,8 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <h2 class="text-h2 text-center q-mb-md">AurionCal</h2>
+    <div class="header-bar q-pa-sm">
+      <h2 class="text-h2 text-center q-mb-md">{{ $t('layout.title') }}</h2>
+      <div class="header-bar__lang">
+        <LanguageSelector />
+      </div>
+    </div>
+
     <p class="text-weight-light text-center">
-      Votre emploi du temps synchronisé dans votre calendrier, automatiquement.
+      {{ $t('layout.subtitle') }}
     </p>
     <q-separator />
     <q-page-container>
@@ -13,7 +19,7 @@
     <q-footer :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
       <q-separator />
       <div class="row items-center justify-end q-px-md q-py-sm full-width text-right text-grey-7">
-        <span class="q-mr-sm">Développé par Steve LABUS -</span>
+        <span class="q-mr-sm">{{ $t('layout.footerBy', { name: 'Steve LABUS' }) }}</span>
         <a
           href="https://github.com/AngryKiller/AurionCal-API"
           target="_blank"
@@ -40,12 +46,50 @@
 
 <script setup lang="ts">
 import FrequentlyAsked from 'components/FrequentlyAsked.vue';
+import LanguageSelector from 'components/LanguageSelector.vue';
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
 
 $q.dark.set('auto');
 </script>
+
+<style scoped>
+.header-bar {
+  position: relative;
+}
+
+.header-bar__lang {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 599px) {
+  .header-bar {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .header-bar__lang {
+    position: static;
+    transform: none;
+    margin-top: 0;
+    display: flex;
+    padding-top: 10px;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .header-bar h2 {
+    margin-bottom: 0 !important;
+    margin-top: 20px !important;
+  }
+}
+</style>
 
 <style>
 .page-container {

@@ -1,5 +1,7 @@
-import enUS from './en-US';
+import manifest from './manifest';
 
-export default {
-  'en-US': enUS,
-};
+const messages = Object.fromEntries(manifest.map((l) => [l.code, l.messages] as const)) as Record<string, unknown>;
+
+export default messages;
+
+export { manifest };

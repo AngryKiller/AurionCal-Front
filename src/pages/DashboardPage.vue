@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="q-pa-md form-wrap">
-      <div class="text-h5 q-mb-md">Mon compte</div>
+      <div class="text-h5 q-mb-md">{{ $t('dashboard.title') }}</div>
       <q-separator />
       <q-form class="q-gutter-md q-mt-md">
-        <q-input filled v-model="email" label="Adresse mail Junia" readonly>
+        <q-input filled v-model="email" :label="$t('dashboard.emailLabel')" readonly>
           <template #append>
             <q-btn flat round dense icon="content_copy" @click="copy(email)" :disable="!email" />
           </template>
@@ -13,8 +13,8 @@
         <q-input
           filled
           v-model="calendarFeedUrl"
-          label="URL du flux calendrier"
-          :hint="calendarFeedUrl ? '' : 'Indisponible pour le moment'"
+          :label="$t('dashboard.calendarUrlLabel')"
+          :hint="calendarFeedUrl ? '' : $t('dashboard.calendarUrlUnavailable')"
           readonly
         >
           <template #append>
@@ -35,7 +35,7 @@
               class="full-width"
               color="primary"
               icon="event_available"
-              label="S'abonner au calendrier"
+              :label="$t('dashboard.subscribe')"
               :disable="!calendarFeedUrl"
               @click="openSubscribeDialog"
             />
@@ -45,7 +45,7 @@
               class="full-width"
               color="warning"
               icon="autorenew"
-              label="Regénérer un flux"
+              :label="$t('dashboard.resetFeed')"
               @click="openResetDialog"
             />
           </div>
@@ -55,7 +55,7 @@
               color="secondary"
               outline
               icon="logout"
-              label="Se déconnecter"
+              :label="$t('dashboard.logout')"
               @click="doLogout"
             />
           </div>
@@ -69,7 +69,7 @@
             outline
             class="full-width"
             icon="delete_forever"
-            label="Supprimer le compte"
+            :label="$t('dashboard.deleteAccount')"
             @click="openDeleteDialog"
           />
         </div>
@@ -89,6 +89,7 @@ import ConfirmDeleteAccountDialog from 'components/dialogs/ConfirmDeleteAccountD
 import ResetCalendarLinkDialog from 'components/dialogs/ResetCalendarLinkDialog.vue';
 import ConfirmSubscribeCalendarDialog from 'components/dialogs/ConfirmSubscribeCalendarDialog.vue';
 import config from 'src/config';
+import { useI18n } from 'vue-i18n';
 
 interface Decoded extends Record<string, unknown> {
   sub?: string;
@@ -102,6 +103,7 @@ interface Decoded extends Record<string, unknown> {
 const $q = useQuasar();
 const auth = useAuthStore();
 const router = useRouter();
+const { t } = useI18n({ useScope: 'global' });
 
 const email = ref('');
 const calendarFeedUrl = ref('');
@@ -110,8 +112,8 @@ function copy(text: string) {
   if (!text) return;
   navigator.clipboard
     .writeText(text)
-    .then(() => $q.notify({ type: 'positive', message: 'Copié dans le presse-papiers' }))
-    .catch(() => $q.notify({ type: 'warning', message: 'Impossible de copier' }));
+    .then(() => $q.notify({ type: 'positive', message: t('dashboard.notifyCopied') }))
+    .catch(() => $q.notify({ type: 'warning', message: t('dashboard.notifyCopyFailed') }));
 }
 
 function subscribeToCalendar() {
@@ -147,18 +149,18 @@ function confirmDelete() {
       const client = createClient();
       await client.aurionCalApiEndpointsDeleteUserEndpoint();
       auth.logout();
-      $q.notify({ type: 'positive', message: 'Compte supprimé.' });
+      $q.notify({ type: 'positive', message: t('dashboard.notifyAccountDeleted') });
       void router.push('/');
     } catch (e) {
       if (e instanceof ApiException && e.status === 401) {
         void $q.notify({
           type: 'negative',
-          message: 'Session expirée. Veuillez vous reconnecter.',
+          message: t('dashboard.notifySessionExpired'),
         });
         auth.logout();
         void router.push('/');
       } else {
-        $q.notify({ type: 'negative', message: 'Échec de la suppression du compte.' });
+        $q.notify({ type: 'negative', message: t('dashboard.notifyDeleteFailed') });
       }
     } finally {
       $q.loading.hide();
@@ -169,7 +171,7 @@ function confirmDelete() {
 function doLogout() {
   $q.loading.show();
   auth.logout();
-  $q.notify({ type: 'info', message: 'Déconnecté' });
+  $q.notify({ type: 'info', message: t('dashboard.notifyLoggedOut') });
   void router.push('/');
   $q.loading.hide();
 }
@@ -195,7 +197,7 @@ async function loadProfile(showLoader = true) {
     }
   } catch (e) {
     if (e instanceof ApiException && e.status === 401) {
-      void $q.notify({ type: 'negative', message: 'Session expirée. Veuillez vous reconnecter.' });
+      void $q.notify({ type: 'negative', message: t('dashboard.notifySessionExpired') });
       auth.logout();
       void router.push('/');
     } else {
@@ -230,14 +232,14 @@ async function confirmReset() {
     const client = createClient();
     await client.aurionCalApiEndpointsResetCalendarTokenEndpoint();
     await loadProfile(false);
-    $q.notify({ type: 'positive', message: 'Lien calendrier regénéré.' });
+    $q.notify({ type: 'positive', message: t('dashboard.notifyLinkRegenerated') });
   } catch (e) {
     if (e instanceof ApiException && e.status === 401) {
-      void $q.notify({ type: 'negative', message: 'Session expirée. Veuillez vous reconnecter.' });
+      void $q.notify({ type: 'negative', message: t('dashboard.notifySessionExpired') });
       auth.logout();
       void router.push('/');
     } else {
-      $q.notify({ type: 'negative', message: 'Échec de la régénération du lien.' });
+      $q.notify({ type: 'negative', message: t('dashboard.notifyRegenerateFailed') });
     }
   } finally {
     $q.loading.hide();
