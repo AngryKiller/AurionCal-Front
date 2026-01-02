@@ -14,7 +14,7 @@
               v-model="email"
               :rules="emailRules"
               :label="$t('auth.email')"
-              :hint="$t('auth.emailHint')"
+              :hint="emailHintText"
               lazy-rules
             />
 
@@ -47,7 +47,7 @@
               v-model="regEmail"
               :rules="emailRules"
               :label="$t('auth.email')"
-              :hint="$t('auth.emailHint')"
+              :hint="emailHintText"
               lazy-rules
             />
             <q-input
@@ -115,6 +115,8 @@ const emailRules = computed(() => [
   (val: string) => !!val || t('auth.emailRequired'),
   (val: string) => val?.toLowerCase().endsWith('@student.junia.com') || t('auth.emailDomain'),
 ]);
+
+const emailHintText = '...@student.junia.com';
 
 async function login() {
   email.value = email.value.trim();
