@@ -29,6 +29,11 @@
           </template>
         </q-input>
 
+        <div class="text-caption text-grey-7 q-mt-xs" v-if="lastUpdatedData">
+          {{ $t('dashboard.lastUpdated') }} :
+          <q-badge outline :color="lastUpdatedData.color" :label="lastUpdatedData.label" />
+        </div>
+
         <div class="row q-col-gutter-sm">
           <div class="col-12 col-sm">
             <q-btn
@@ -79,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'stores/auth-store';
 import jwtDecode from 'jwt-decode';
@@ -90,6 +95,13 @@ import ResetCalendarLinkDialog from 'components/dialogs/ResetCalendarLinkDialog.
 import ConfirmSubscribeCalendarDialog from 'components/dialogs/ConfirmSubscribeCalendarDialog.vue';
 import config from 'src/config';
 import { useI18n } from 'vue-i18n';
+
+type LastUpdatedColor = 'secondary' | 'warning';
+
+interface LastUpdatedData {
+  color: LastUpdatedColor;
+  label: string;
+}
 
 interface Decoded extends Record<string, unknown> {
   sub?: string;
@@ -103,10 +115,38 @@ interface Decoded extends Record<string, unknown> {
 const $q = useQuasar();
 const auth = useAuthStore();
 const router = useRouter();
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const email = ref('');
 const calendarFeedUrl = ref('');
+const lastUpdatedAt = ref<Date | null>(null);
+
+const lastUpdatedData = computed<LastUpdatedData>(() => {
+  if (!lastUpdatedAt.value) {
+    return {
+      color: 'warning',
+      label: t('dashboard.never'),
+    };
+  }
+
+  let label: string;
+  try {
+    label = new Intl.DateTimeFormat(locale.value, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(lastUpdatedAt.value);
+  } catch {
+    label = lastUpdatedAt.value.toLocaleString();
+  }
+
+  return {
+    color: 'secondary',
+    label,
+  };
+});
 
 function copy(text: string) {
   if (!text) return;
@@ -125,7 +165,7 @@ function subscribeToCalendar() {
       const webcal = encodeURIComponent(`webcal://${u.host}${u.pathname}${u.search}`);
       window.location.href = `https://calendar.google.com/calendar/r?cid=${webcal}`;
       return;
-    }else window.location.href = `webcal://${u.host}${u.pathname}${u.search}`;
+    } else window.location.href = `webcal://${u.host}${u.pathname}${u.search}`;
   } catch {
     window.open(calendarFeedUrl.value, '_blank');
   }
@@ -194,6 +234,9 @@ async function loadProfile(showLoader = true) {
     if (resp?.email) email.value = String(resp.email);
     if (resp?.calendarFeedUrl) {
       calendarFeedUrl.value = resp.calendarFeedUrl;
+    }
+    if (resp?.lastUpdated) {
+      lastUpdatedAt.value = new Date(resp.lastUpdated);
     }
   } catch (e) {
     if (e instanceof ApiException && e.status === 401) {

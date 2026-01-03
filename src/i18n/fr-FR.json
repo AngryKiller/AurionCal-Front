@@ -33,6 +33,8 @@
     "emailLabel": "Adresse mail Junia",
     "calendarUrlLabel": "URL du flux calendrier",
     "calendarUrlUnavailable": "Indisponible pour le moment",
+    "lastUpdated": "Dernière mise à jour",
+    "never": "Jamais",
     "subscribe": "S'abonner au calendrier",
     "resetFeed": "Regénérer un flux",
     "logout": "Se déconnecter",
@@ -71,7 +73,7 @@
     },
     "passwordChanged": {
       "q": "J'ai changé mon mot de passe Aurion, que faire ?",
-      "a": "Fonctionnalité en développement."
+      "a": "Reconnectez-vous simplement avec votre nouveau mot de passe ci-dessus. AurionCal repérera la modification et rafraichira vos données automatiquement."
     }
   },
   "errors": {
@@ -81,4 +83,3 @@
     }
   }
 }
-

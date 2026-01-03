@@ -219,6 +219,12 @@ export class Client {
             result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AurionCalApiEndpointsRegisterUserResponse;
             return result200;
             });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as FastEndpointsErrorResponse;
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -297,6 +303,7 @@ export interface AurionCalApiEndpointsUserProfileResponse {
     userId?: string;
     email?: string;
     calendarFeedUrl?: string;
+    lastUpdated?: Date | undefined;
 }
 
 export interface AurionCalApiEndpointsRegisterUserResponse {
@@ -304,8 +311,8 @@ export interface AurionCalApiEndpointsRegisterUserResponse {
 }
 
 export interface AurionCalApiEndpointsRegisterUserRequest {
-    email?: string;
-    password?: string;
+    email: string;
+    password: string;
 }
 
 export class ApiException extends Error {

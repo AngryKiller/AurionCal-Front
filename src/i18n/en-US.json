@@ -33,6 +33,8 @@
     "emailLabel": "Junia email",
     "calendarUrlLabel": "Calendar feed URL",
     "calendarUrlUnavailable": "Unavailable for now",
+    "lastUpdated": "Last updated",
+    "never": "Never",
     "subscribe": "Subscribe to calendar",
     "resetFeed": "Regenerate feed",
     "logout": "Sign out",
@@ -71,7 +73,7 @@
     },
     "passwordChanged": {
       "q": "I reset my Aurion password, what should I do?",
-      "a": "Feature under development."
+      "a": "Login again with your new password. AurionCal will detect the change and update your data automatically."
     }
   },
   "errors": {

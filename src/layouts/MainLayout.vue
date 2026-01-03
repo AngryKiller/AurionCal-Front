@@ -28,8 +28,8 @@
           class="text-grey-7"
         >
           <svg
-            fill="#000000"
             width="24"
+            id="githubLogo"
             height="24"
             viewBox="0 -0.5 25 25"
             xmlns="http://www.w3.org/2000/svg"
@@ -88,6 +88,10 @@ $q.dark.set('auto');
     margin-bottom: 0 !important;
     margin-top: 20px !important;
   }
+}
+
+#githubLogo {
+  fill: currentColor;
 }
 </style>
 
