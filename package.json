@@ -1,8 +1,8 @@
 {
   "name": "aurioncal-front",
   "version": "0.0.1",
-  "description": "Front-end to communicate with the AurionCal API",
-  "productName": "AurionCal-Front",
+  "description": "Your planning synced into your calendar, seamlessly.",
+  "productName": "AurionCal",
   "author": "Steve Labus <steve.labus@icloud.com>",
   "type": "module",
   "private": true,
