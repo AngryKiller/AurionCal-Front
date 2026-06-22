@@ -273,6 +273,51 @@ export class Client {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    /**
+     * @return No Content
+     */
+    aurionCalApiEndpointsSetExamAccommodationsEndpoint(setExamAccommodationsRequest: AurionCalApiEndpointsSetExamAccommodationsRequest): Promise<void> {
+        let url_ = this.baseUrl + "/api/user/exam-accommodations";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(setExamAccommodationsRequest);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAurionCalApiEndpointsSetExamAccommodationsEndpoint(_response);
+        });
+    }
+
+    protected processAurionCalApiEndpointsSetExamAccommodationsEndpoint(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            return throwException("Forbidden", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export interface AurionCalApiEndpointsCheckLoginInfoResponse {
@@ -304,6 +349,7 @@ export interface AurionCalApiEndpointsUserProfileResponse {
     email?: string;
     calendarFeedUrl?: string;
     lastUpdated?: Date | undefined;
+    examAccommodations?: boolean;
 }
 
 export interface AurionCalApiEndpointsRegisterUserResponse {
@@ -313,6 +359,10 @@ export interface AurionCalApiEndpointsRegisterUserResponse {
 export interface AurionCalApiEndpointsRegisterUserRequest {
     email: string;
     password: string;
+}
+
+export interface AurionCalApiEndpointsSetExamAccommodationsRequest {
+    enabled?: boolean;
 }
 
 export class ApiException extends Error {

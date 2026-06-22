@@ -46,7 +46,10 @@
     "notifyDeleteFailed": "Échec de la suppression du compte.",
     "notifyLoggedOut": "Déconnecté",
     "notifyLinkRegenerated": "Lien calendrier regénéré.",
-    "notifyRegenerateFailed": "Échec de la régénération du lien."
+    "notifyRegenerateFailed": "Échec de la régénération du lien.",
+    "examAccommodations": "Horaires tiers-temps pour les examens",
+    "notifyExamAccommodationsSaved": "Paramètre tiers-temps mis à jour.",
+    "notifyExamAccommodationsFailed": "Échec de la mise à jour du paramètre tiers-temps."
   },
   "dialogs": {
     "deleteAccount": {

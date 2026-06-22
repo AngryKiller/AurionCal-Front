@@ -46,7 +46,10 @@
     "notifyDeleteFailed": "Failed to delete account.",
     "notifyLoggedOut": "Signed out",
     "notifyLinkRegenerated": "Calendar link regenerated.",
-    "notifyRegenerateFailed": "Failed to regenerate link."
+    "notifyRegenerateFailed": "Failed to regenerate link.",
+    "examAccommodations": "Extended time (adjust exam schedules for accommodations)",
+    "notifyExamAccommodationsSaved": "Extended time setting updated.",
+    "notifyExamAccommodationsFailed": "Failed to update extended time setting."
   },
   "dialogs": {
     "deleteAccount": {

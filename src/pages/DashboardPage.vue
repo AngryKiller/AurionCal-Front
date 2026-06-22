@@ -68,6 +68,18 @@
 
         <q-separator />
 
+        <div class="row items-center q-gutter-sm">
+          <q-checkbox
+            v-model="examAccommodations"
+            :label="$t('dashboard.examAccommodations')"
+            :disable="examAccommodationsLoading"
+            @update:model-value="onExamAccommodationsChange"
+          />
+          <q-spinner v-if="examAccommodationsLoading" size="16px" color="primary" />
+        </div>
+
+        <q-separator />
+
         <div class="row q-gutter-sm">
           <q-btn
             color="negative"
@@ -120,6 +132,9 @@ const { t, locale } = useI18n({ useScope: 'global' });
 const email = ref('');
 const calendarFeedUrl = ref('');
 const lastUpdatedAt = ref<Date | null>(null);
+const examAccommodations = ref(false);
+const examAccommodationsLoading = ref(false);
+let examAccommodationsCooldownTimer: ReturnType<typeof setTimeout> | null = null;
 
 const lastUpdatedData = computed<LastUpdatedData>(() => {
   if (!lastUpdatedAt.value) {
@@ -238,6 +253,9 @@ async function loadProfile(showLoader = true) {
     if (resp?.lastUpdated) {
       lastUpdatedAt.value = new Date(resp.lastUpdated);
     }
+    if (resp?.examAccommodations !== undefined) {
+      examAccommodations.value = resp.examAccommodations;
+    }
   } catch (e) {
     if (e instanceof ApiException && e.status === 401) {
       void $q.notify({ type: 'negative', message: t('dashboard.notifySessionExpired') });
@@ -299,6 +317,36 @@ function openResetDialog() {
   $q.dialog({ component: ResetCalendarLinkDialog }).onOk(() => {
     void confirmReset();
   });
+}
+
+async function onExamAccommodationsChange(value: boolean) {
+  if (examAccommodationsLoading.value) return;
+
+  if (examAccommodationsCooldownTimer !== null) {
+    clearTimeout(examAccommodationsCooldownTimer);
+    examAccommodationsCooldownTimer = null;
+  }
+
+  examAccommodationsLoading.value = true;
+  try {
+    const client = createClient();
+    await client.aurionCalApiEndpointsSetExamAccommodationsEndpoint({ enabled: value });
+    $q.notify({ type: 'positive', message: t('dashboard.notifyExamAccommodationsSaved') });
+  } catch (e) {
+    examAccommodations.value = !value;
+    if (e instanceof ApiException && e.status === 401) {
+      void $q.notify({ type: 'negative', message: t('dashboard.notifySessionExpired') });
+      auth.logout();
+      void router.push('/');
+    } else {
+      $q.notify({ type: 'negative', message: t('dashboard.notifyExamAccommodationsFailed') });
+    }
+  } finally {
+    examAccommodationsCooldownTimer = setTimeout(() => {
+      examAccommodationsLoading.value = false;
+      examAccommodationsCooldownTimer = null;
+    }, 1000);
+  }
 }
 
 onMounted(() => {
