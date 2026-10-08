@@ -12,9 +12,8 @@
             <q-input
               filled
               v-model="email"
-              :rules="emailRules"
+              :rules="loginEmailRules"
               :label="$t('auth.email')"
-              :hint="emailHintText"
               lazy-rules
             />
 
@@ -42,12 +41,24 @@
         </q-tab-panel>
         <q-tab-panel name="register">
           <q-form ref="registerFormRef" class="q-gutter-md" @submit.prevent="register">
+            <q-select
+              v-if="schools.length > 1"
+              filled
+              v-model="selectedSchoolId"
+              :options="schools"
+              option-value="id"
+              option-label="name"
+              emit-value
+              map-options
+              :label="$t('auth.school')"
+              @update:model-value="registerFormRef?.resetValidation()"
+            />
             <q-input
               filled
               v-model="regEmail"
-              :rules="emailRules"
+              :rules="registerEmailRules"
               :label="$t('auth.email')"
-              :hint="emailHintText"
+              :hint="registerEmailHint"
               lazy-rules
             />
             <q-input
@@ -78,12 +89,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'stores/auth-store';
 import { useRouter } from 'vue-router';
 import { Client, ApiException } from '../api/business';
+import type { AurionCalApiEndpointsSchoolSummary as SchoolSummary } from '../api/business';
 import type { QForm } from 'quasar';
 import RegistrationSuccessDialog from 'components/dialogs/RegistrationSuccessDialog.vue';
 import config from 'src/config';
@@ -111,12 +123,56 @@ const router = useRouter();
 const loginFormRef = ref<QForm | null>(null);
 const registerFormRef = ref<QForm | null>(null);
 
-const emailRules = computed(() => [
-  (val: string) => !!val || t('auth.emailRequired'),
-  (val: string) => val?.toLowerCase().endsWith('@student.junia.com') || t('auth.emailDomain'),
-]);
+// Schools offered at sign-up (loaded from the API)
+const schools = ref<SchoolSummary[]>([]);
+const selectedSchoolId = ref<string | null>(null);
 
-const emailHintText = '...@student.junia.com';
+const selectedSchool = computed(() => schools.value.find((s) => s.id === selectedSchoolId.value));
+
+// "*.school.edu" accepts subdomains of school.edu
+function emailMatchesDomains(value: string, domains: string[]): boolean {
+  const at = value.lastIndexOf('@');
+  if (at < 0) return false;
+  const domain = value.slice(at + 1).trim().toLowerCase();
+  return domains.some((d) => {
+    const pattern = d.toLowerCase();
+    return pattern.startsWith('*.') ? domain.endsWith(pattern.slice(1)) : domain === pattern;
+  });
+}
+
+function domainsLabel(domains: string[]): string {
+  return domains.map((d) => `@${d}`).join(', ');
+}
+
+// Domain rules are skipped when the schools could not be loaded: the API validates them anyway
+function buildEmailRules(domains: string[]) {
+  return [
+    (val: string) => !!val || t('auth.emailRequired'),
+    (val: string) =>
+      domains.length === 0 || emailMatchesDomains(val ?? '', domains) || t('auth.emailDomain', { domains: domainsLabel(domains) }),
+  ];
+}
+
+const registerDomains = computed(() => selectedSchool.value?.emailDomains ?? []);
+// The school is not known at login (it is found from the email), so any school's domain is accepted
+const allDomains = computed(() => schools.value.flatMap((s) => s.emailDomains ?? []));
+
+const registerEmailRules = computed(() => buildEmailRules(registerDomains.value));
+const loginEmailRules = computed(() => buildEmailRules(allDomains.value));
+const registerEmailHint = computed(() =>
+  registerDomains.value.length > 0 ? registerDomains.value.map((d) => `...@${d.replace(/^\*\./, '')}`).join(' / ') : ''
+);
+
+onMounted(async () => {
+  try {
+    const resp = await new Client(config.API_BASE_URL).aurionCalApiEndpointsGetSchoolsEndpoint();
+    schools.value = resp?.schools ?? [];
+    selectedSchoolId.value = resp?.defaultSchoolId ?? schools.value[0]?.id ?? null;
+  } catch {
+    // Without the list, the API falls back on its default school
+    schools.value = [];
+  }
+});
 
 async function login() {
   email.value = email.value.trim();
@@ -151,7 +207,11 @@ async function register() {
   registerLoading.value = true;
   try {
     const client = new Client(config.API_BASE_URL);
-    const response = await client.aurionCalApiEndpointsRegisterUserEndpoint({ email: regEmail.value, password: regPassword.value });
+    const response = await client.aurionCalApiEndpointsRegisterUserEndpoint({
+      email: regEmail.value,
+      password: regPassword.value,
+      schoolId: selectedSchoolId.value ?? undefined,
+    });
     if (response?.userId) {
       email.value = regEmail.value;
       password.value = regPassword.value;
@@ -166,6 +226,10 @@ async function register() {
     if (e instanceof ApiException && e.status === 401) {
       $q.notify({ type: 'negative', message: t('auth.aurionWrongCredentials') });
       registerError.value = t('auth.aurionWrongCredentials');
+    } else if (e instanceof ApiException && e.status === 400 && e.result?.errors?.email?.includes('EMAIL_DOMAIN_NOT_ALLOWED')) {
+      const message = t('auth.emailDomain', { domains: domainsLabel(registerDomains.value) });
+      $q.notify({ type: 'negative', message });
+      registerError.value = message;
     } else if (e instanceof ApiException && e.status === 409) {
       $q.notify({ type: 'negative', message: t('auth.emailAlreadyExists') });
       registerError.value = t('auth.emailAlreadyExists');

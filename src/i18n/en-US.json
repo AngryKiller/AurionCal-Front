@@ -14,12 +14,12 @@
     "loginTab": "I already have an account",
     "registerTab": "Create an account",
     "email": "Aurion email",
-    "emailHint": "...@student.junia.com",
     "password": "Password",
     "login": "Sign in",
     "register": "Sign up",
     "emailRequired": "Email required",
-    "emailDomain": "Email must end with @student.junia.com",
+    "school": "School",
+    "emailDomain": "Email must end with {domains}",
     "fixFormErrors": "Please fix the form errors.",
     "loginSuccess": "Login successful ({email})",
     "invalidCredentials": "Invalid credentials",
@@ -31,7 +31,7 @@
   },
   "dashboard": {
     "title": "My account",
-    "emailLabel": "Junia email",
+    "emailLabel": "Email",
     "calendarUrlLabel": "Calendar feed URL",
     "calendarUrlUnavailable": "Unavailable for now",
     "lastUpdated": "Last updated",
@@ -69,11 +69,11 @@
   "faq": {
     "howItWorks": {
       "q": "How does it work?",
-      "a": "AurionCal lets you sync your Aurion timetable to your Apple, Google, etc. calendar.\n\nYour events are automatically updated to reflect changes on Aurion (about every hour). To do so, just create an account using your Junia credentials, then subscribe to the generated calendar feed.\n\nAurionCal is not affiliated with Junia."
+      "a": "AurionCal lets you sync your Aurion timetable to your Apple, Google, etc. calendar.\n\nYour events are automatically updated to reflect changes on Aurion (about every hour). To do so, just create an account using your Aurion credentials, then subscribe to the generated calendar feed.\n\nAurionCal is not affiliated with your school."
     },
     "security": {
       "q": "Is the service secure?",
-      "a": "To connect to Aurion and retrieve your data, AurionCal uses your Junia credentials.\n\nThese are stored encrypted with a private key stored on an external service.\n\nAurionCal source code is open and available on GitHub."
+      "a": "To connect to Aurion and retrieve your data, AurionCal uses your Aurion credentials.\n\nThese are stored encrypted with a private key stored on an external service.\n\nAurionCal source code is open and available on GitHub."
     },
     "passwordChanged": {
       "q": "I reset my Aurion password, what should I do?",

@@ -66,17 +66,19 @@
           </div>
         </div>
 
-        <q-separator />
+        <template v-if="supportsExamAccommodations">
+          <q-separator />
 
-        <div class="row items-center q-gutter-sm">
-          <q-checkbox
-            v-model="examAccommodations"
-            :label="$t('dashboard.examAccommodations')"
-            :disable="examAccommodationsLoading"
-            @update:model-value="onExamAccommodationsChange"
-          />
-          <q-spinner v-if="examAccommodationsLoading" size="16px" color="primary" />
-        </div>
+          <div class="row items-center q-gutter-sm">
+            <q-checkbox
+              v-model="examAccommodations"
+              :label="$t('dashboard.examAccommodations')"
+              :disable="examAccommodationsLoading"
+              @update:model-value="onExamAccommodationsChange"
+            />
+            <q-spinner v-if="examAccommodationsLoading" size="16px" color="primary" />
+          </div>
+        </template>
 
         <q-separator />
 
@@ -133,6 +135,8 @@ const email = ref('');
 const calendarFeedUrl = ref('');
 const lastUpdatedAt = ref<Date | null>(null);
 const examAccommodations = ref(false);
+// Whether the user's school offers the extra-time option
+const supportsExamAccommodations = ref(false);
 const examAccommodationsLoading = ref(false);
 let examAccommodationsCooldownTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -256,6 +260,7 @@ async function loadProfile(showLoader = true) {
     if (resp?.examAccommodations !== undefined) {
       examAccommodations.value = resp.examAccommodations;
     }
+    supportsExamAccommodations.value = resp?.supportsExamAccommodations ?? false;
   } catch (e) {
     if (e instanceof ApiException && e.status === 401) {
       void $q.notify({ type: 'negative', message: t('dashboard.notifySessionExpired') });

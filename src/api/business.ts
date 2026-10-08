@@ -146,6 +146,42 @@ export class Client {
     /**
      * @return Success
      */
+    aurionCalApiEndpointsGetSchoolsEndpoint(): Promise<AurionCalApiEndpointsGetSchoolsResponse> {
+        let url_ = this.baseUrl + "/api/schools";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAurionCalApiEndpointsGetSchoolsEndpoint(_response);
+        });
+    }
+
+    protected processAurionCalApiEndpointsGetSchoolsEndpoint(response: Response): Promise<AurionCalApiEndpointsGetSchoolsResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AurionCalApiEndpointsGetSchoolsResponse;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AurionCalApiEndpointsGetSchoolsResponse>(null as any);
+    }
+
+    /**
+     * @return Success
+     */
     aurionCalApiEndpointsGetUserProfileEndpoint(): Promise<AurionCalApiEndpointsUserProfileResponse> {
         let url_ = this.baseUrl + "/api/user/profile";
         url_ = url_.replace(/[?&]$/, "");
@@ -344,12 +380,26 @@ export interface AurionCalApiEndpointsCheckLoginInfoRequest {
 export interface AurionCalApiEndpointsGetCalendarFeedRequest {
 }
 
+export interface AurionCalApiEndpointsGetSchoolsResponse {
+    schools?: AurionCalApiEndpointsSchoolSummary[];
+    defaultSchoolId?: string;
+}
+
+export interface AurionCalApiEndpointsSchoolSummary {
+    id?: string;
+    name?: string;
+    emailDomains?: string[];
+    supportsExamAccommodations?: boolean;
+}
+
 export interface AurionCalApiEndpointsUserProfileResponse {
     userId?: string;
+    schoolId?: string;
     email?: string;
     calendarFeedUrl?: string;
     lastUpdated?: Date | undefined;
     examAccommodations?: boolean;
+    supportsExamAccommodations?: boolean;
 }
 
 export interface AurionCalApiEndpointsRegisterUserResponse {
@@ -357,6 +407,7 @@ export interface AurionCalApiEndpointsRegisterUserResponse {
 }
 
 export interface AurionCalApiEndpointsRegisterUserRequest {
+    schoolId?: string | undefined;
     email: string;
     password: string;
 }
