@@ -26,6 +26,7 @@
     "loginError": "Login error",
     "registerError": "Registration error.",
     "aurionWrongCredentials": "Wrong Aurion credentials",
+    "emailAlreadyExists": "An account already exists with this email. Please sign in instead.",
     "loginNow": "You can now sign in."
   },
   "dashboard": {

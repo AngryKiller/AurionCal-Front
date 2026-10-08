@@ -26,6 +26,7 @@
     "loginError": "Erreur de connexion",
     "registerError": "Erreur lors de l'inscription.",
     "aurionWrongCredentials": "Identifiants Aurion incorrects",
+    "emailAlreadyExists": "Un compte existe déjà avec cet email. Connectez-vous depuis le formulaire de connexion.",
     "loginNow": "Identifiez-vous maintenant."
   },
   "dashboard": {

@@ -166,6 +166,9 @@ async function register() {
     if (e instanceof ApiException && e.status === 401) {
       $q.notify({ type: 'negative', message: t('auth.aurionWrongCredentials') });
       registerError.value = t('auth.aurionWrongCredentials');
+    } else if (e instanceof ApiException && e.status === 409) {
+      $q.notify({ type: 'negative', message: t('auth.emailAlreadyExists') });
+      registerError.value = t('auth.emailAlreadyExists');
     } else {
       registerError.value = t('auth.registerError');
     }
