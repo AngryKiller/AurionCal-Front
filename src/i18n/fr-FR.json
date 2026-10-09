@@ -66,6 +66,10 @@
       "message": "Cette action invalide l'ancien lien de votre flux calendrier et en génère un nouveau. Vous devrez mettre à jour vos abonnements externes. Continuer ?"
     }
   },
+  "schools": {
+    "title": "Écoles compatibles",
+    "disclaimer": "Marques et logos propriétés de leurs détenteurs respectifs. AurionCal n'est affilié à aucune de ces écoles."
+  },
   "faq": {
     "howItWorks": {
       "q": "Comment ça fonctionne ? ",

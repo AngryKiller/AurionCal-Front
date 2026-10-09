@@ -84,6 +84,7 @@
           </q-form>
         </q-tab-panel>
       </q-tab-panels>
+      <SupportedSchools :schools="schools" />
     </div>
   </div>
 </template>
@@ -98,6 +99,7 @@ import { Client, ApiException } from '../api/business';
 import type { AurionCalApiEndpointsSchoolSummary as SchoolSummary } from '../api/business';
 import type { QForm } from 'quasar';
 import RegistrationSuccessDialog from 'components/dialogs/RegistrationSuccessDialog.vue';
+import SupportedSchools from 'components/SupportedSchools.vue';
 import config from 'src/config';
 
 const { t } = useI18n({ useScope: 'global' });

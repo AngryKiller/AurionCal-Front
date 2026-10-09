@@ -33,3 +33,6 @@ yarn-error.log*
 .env.local*
 /.vscode/
 .env
+
+# School logos (trademarks): provided by the host at deploy time, not versioned
+/public/schools/

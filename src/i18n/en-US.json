@@ -66,6 +66,10 @@
       "message": "This will invalidate your current calendar feed link and generate a new one. You will need to update your external subscriptions. Continue?"
     }
   },
+  "schools": {
+    "title": "Supported schools",
+    "disclaimer": "Trademarks and logos belong to their respective owners. AurionCal is not affiliated with any of these schools."
+  },
   "faq": {
     "howItWorks": {
       "q": "How does it work?",
